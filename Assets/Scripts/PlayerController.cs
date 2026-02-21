@@ -18,12 +18,15 @@ public class PlayerController : MonoBehaviour
     public Transform groundCheck;
     public LayerMask groundLayer;
 
+    Animator anim;
+
     public float groundCheckRadius = 0.1f;
 
     public int coin = 0;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
         facingRight = false;
     }
 
@@ -55,7 +58,16 @@ public class PlayerController : MonoBehaviour
         }
 
         Debug.Log(coin.ToString());
-        
+
+        if (Mathf.Abs(moveInput) < 0.01f)
+        {
+            anim.SetBool("PlayerRunning", false);
+        }
+        else
+        {
+            anim.SetBool("PlayerRunning", true);
+        }
+
     }
 
     private void Flip()

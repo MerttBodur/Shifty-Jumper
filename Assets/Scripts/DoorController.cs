@@ -32,8 +32,7 @@ public class DoorController : MonoBehaviour
     {
         if (collision.CompareTag("Player") && player.coin >= requiredCoin)
         {
-            Debug.Log("Made Contact with Door.");
-          //SceneManager.LoadScene(1);
+            SceneManager.LoadScene("Level2");
         }
     }
 

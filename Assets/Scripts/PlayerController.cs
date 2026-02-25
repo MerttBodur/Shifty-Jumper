@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -25,8 +25,14 @@ public class PlayerController : MonoBehaviour
     public int coin = 0;
     public static int deathCount = 0;
 
-    // hareket giri�i burada saklanacak
+    public AudioSource audioSource;
+    public AudioClip Jump;
+
+    // hareket girişi burada saklanacak
     float moveInput;
+
+    // 🔹 Aşağı doğru ray mesafesi (Inspector’dan oynayabilirsin)
+    public float groundRayDistance = 0.6f;
 
     void Start()
     {
@@ -50,27 +56,38 @@ public class PlayerController : MonoBehaviour
             Flip();
         }
 
-        // Ground check
+        // Ground check (ayak altı daire)
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
-        // Coyote time sayac�
+        // Coyote time sayacı
         if (isGrounded)
         {
             coyoteTimeCounter = coyoteTime;     // yerdeyken her frame resetleniyor
         }
         else
         {
-            coyoteTimeCounter -= Time.deltaTime; // havadayken geri say�yor
+            coyoteTimeCounter -= Time.deltaTime; // havadayken geri sayıyor
         }
 
-        // Jump (bas�� an�nda, coyote s�resi i�inde)
+        // Jump (basış anında, coyote süresi içinde)
         if (Input.GetKey(KeyCode.Space) && coyoteTimeCounter > 0f)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-            coyoteTimeCounter = 0f;   // ayn� coyote s�resi i�inde tekrar tekrar z�plamas�n
+            coyoteTimeCounter = 0f;   // aynı coyote süresi içinde tekrar tekrar zıplamasın
+
+            // 🔹 AŞAĞI DOĞRU RAYCAST: altımızda zemin var mı?
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, groundRayDistance, groundLayer);
+
+            if (hit.collider != null)
+            {
+                // Altında bir şey varsa (zemin / platform) → sesi çal
+                audioSource.PlayOneShot(Jump, 0.2f);
+            }
+            // Eğer hit.collider == null ise → alt boşluk → efekt ÇALMA
+            // (duvara tırmanırken olan durum tam olarak bu)
         }
 
-        // Ko�ma animasyonu
+        // Koşma animasyonu
         if (Mathf.Abs(moveInput) < 0.01f)
         {
             anim.SetBool("PlayerRunning", false);
@@ -79,6 +96,9 @@ public class PlayerController : MonoBehaviour
         {
             anim.SetBool("PlayerRunning", true);
         }
+
+        // Debug için istersen ray'i sahnede görebilirsin:
+        Debug.DrawRay(transform.position, Vector2.down * groundRayDistance, Color.red);
     }
 
     void FixedUpdate()

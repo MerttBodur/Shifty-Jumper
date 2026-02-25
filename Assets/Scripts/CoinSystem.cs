@@ -3,6 +3,8 @@ using UnityEngine;
 public class CoinSystem : MonoBehaviour
 {
     public GameObject effect;
+    public AudioClip pickup;
+    public float volume = 3f;
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!collision.CompareTag("Player")) return;
@@ -18,6 +20,7 @@ public class CoinSystem : MonoBehaviour
         }
 
         Instantiate(effect, transform.position, Quaternion.identity);
+        AudioSource.PlayClipAtPoint(pickup, transform.position, volume);
         player.coin++;
         Destroy(gameObject);
 

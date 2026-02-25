@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
-
     public float speed;
     Rigidbody2D rb;
     public float jumpForce;
@@ -13,7 +12,6 @@ public class PlayerController : MonoBehaviour
 
     bool facingRight;
 
-    bool isJumping;
     bool isGrounded;
     public Transform groundCheck;
     public LayerMask groundLayer;
@@ -23,8 +21,13 @@ public class PlayerController : MonoBehaviour
     public float groundCheckRadius = 0.2f;
     public float coyoteTime = 0.1f;
     float coyoteTimeCounter;
+
     public int coin = 0;
     public static int deathCount = 0;
+
+    // hareket giriþi burada saklanacak
+    float moveInput;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -32,12 +35,12 @@ public class PlayerController : MonoBehaviour
         facingRight = false;
     }
 
-
     void Update()
     {
-        float moveInput = Input.GetAxisRaw("Horizontal");
-        rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
+        // Yatay input
+        moveInput = Input.GetAxisRaw("Horizontal");
 
+        // Flip
         if (moveInput > 0 && !facingRight)
         {
             Flip();
@@ -47,7 +50,8 @@ public class PlayerController : MonoBehaviour
             Flip();
         }
 
-        isGrounded = isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        // Ground check
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
         // Coyote time sayacý
         if (isGrounded)
@@ -59,12 +63,14 @@ public class PlayerController : MonoBehaviour
             coyoteTimeCounter -= Time.deltaTime; // havadayken geri sayýyor
         }
 
+        // Jump (basýþ anýnda, coyote süresi içinde)
         if (Input.GetKey(KeyCode.Space) && coyoteTimeCounter > 0f)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             coyoteTimeCounter = 0f;   // ayný coyote süresi içinde tekrar tekrar zýplamasýn
         }
 
+        // Koþma animasyonu
         if (Mathf.Abs(moveInput) < 0.01f)
         {
             anim.SetBool("PlayerRunning", false);
@@ -73,7 +79,12 @@ public class PlayerController : MonoBehaviour
         {
             anim.SetBool("PlayerRunning", true);
         }
+    }
 
+    void FixedUpdate()
+    {
+        // Fiziksel hareket burada
+        rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
     }
 
     private void Flip()
@@ -88,14 +99,10 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.tag == "Spike" || collision.gameObject.tag == "Enemy")
         {
-
             deathCount++;
 
             int index = SceneManager.GetActiveScene().buildIndex;
             SceneManager.LoadScene(index);
         }
     }
-
-  
-
-    }
+}

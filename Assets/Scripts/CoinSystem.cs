@@ -17,9 +17,9 @@ public class CoinSystem : MonoBehaviour
             return;
         }
 
+        Instantiate(effect, transform.position, Quaternion.identity);
         player.coin++;
         Destroy(gameObject);
 
-        Instantiate(effect, transform.position, Quaternion.identity);
     }
 }

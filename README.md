@@ -1,6 +1,6 @@
 # Shifty Jumper – Mini 2D Platform Game
 
-This project is a personal practice work built to learn the basics of 2D game development in :contentReference[oaicite:0]{index=0} and fundamental C# scripting concepts.
+This project is a personal practice work built to learn the basics of 2D game development in Unity and fundamental C# scripting concepts.
 
 ## 🎯 Purpose
 To understand Unity’s core systems, 2D game logic, physics interactions, UI structure, and C# programming patterns through a small platformer project.
